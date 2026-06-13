@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  korp-network:
+    driver: bridge
+
+services:
+  http-server-projeto-korp:
+    build:
+      context: /home/murilo/projeto-korp/app
+      dockerfile: Dockerfile
+    container_name: http-server-projeto-korp
+    networks:
+      - korp-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "8081:80"
+    volumes:
+      - /home/murilo/projeto-korp/nginx:/etc/nginx/conf.d:ro
+    networks:
+      - korp-network
+    depends_on:
+      - http-server-projeto-korp
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - /home/murilo/projeto-korp/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - korp-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - /home/murilo/projeto-korp/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - /home/murilo/projeto-korp/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+    networks:
+      - korp-network
+    depends_on:
+      - prometheus

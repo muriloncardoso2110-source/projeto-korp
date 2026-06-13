@@ -1,0 +1,65 @@
+---
+- name: Automatizar Infraestrutura do Projeto Korp com Monitoramento e Bônus
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Garantir que o Docker e dependências estão instalados
+      apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+          - curl
+        state: present
+        update_cache: yes
+
+    - name: Criar estrutura de pastas do projeto
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /home/murilo/projeto-korp/nginx
+        - /home/murilo/projeto-korp/grafana/provisioning/datasources
+        - /home/murilo/projeto-korp/grafana/provisioning/dashboards
+
+    - name: Criar arquivo de configuracao do Proxy Reverso do NGINX
+      copy:
+        dest: /home/murilo/projeto-korp/nginx/http-server-projeto-korp.conf
+        content: |
+          server {
+              listen 80;
+              location /projeto-korp {
+                  proxy_pass http://http-server-projeto-korp:8080;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+              }
+              location /metrics {
+                  proxy_pass http://http-server-projeto-korp:8080;
+              }
+          }
+        mode: '0644'
+
+    - name: Limpar containers antigos rodando de forma errada
+      command: docker compose down -v --remove-orphans
+      args:
+        chdir: /home/murilo/projeto-korp
+      ignore_errors: yes
+
+    - name: Subir a infraestrutura completa via Docker Compose
+      command: docker compose up -d --build --force-recreate
+      args:
+        chdir: /home/murilo/projeto-korp
+
+    - name: Aguardar 12 segundos para os serviços iniciarem por completo
+      pause:
+        seconds: 12
+
+    - name: Testar o funcionamento fazendo uma requisicao HTTP
+      shell: "curl -s http://localhost:8081/projeto-korp"
+      register: resultado_teste
+
+    - name: Mostrar o JSON retornado no console
+      debug:
+        msg: "Resposta do Servidor Go: {{ resultado_teste.stdout }}"
