@@ -25,14 +25,14 @@ ansible-playbook -i inventory.ini playbook.yml
 Evidências do Funcionamento
 Aqui estão as capturas de tela do ambiente totalmente operacional:
 
-<img width="1867" height="1002" alt="image" src="https://github.com/user-attachments/assets/fdc9fa97-1ae3-4c5c-9c46-4025c4620f1f" />
-
-<img width="1874" height="1008" alt="image" src="https://github.com/user-attachments/assets/02d28efa-fbd8-454f-898c-9d821a6b7684" />
-
-<img width="1868" height="1010" alt="image" src="https://github.com/user-attachments/assets/f30ef9aa-72bd-4f14-95a6-bfd3ea74c862" />
-
  API respondendo o JSON com horário UTC dinâmico (Porta 8081)
+ <img width="1880" height="1035" alt="image3" src="https://github.com/user-attachments/assets/3e899f39-aa17-4c21-966b-6be6c5f80d7a" />
+
  Alvos (Targets) ativos e coletando no Prometheus (Porta 9090)
+ <img width="1875" height="1002" alt="Image1" src="https://github.com/user-attachments/assets/e87c2ec6-7eeb-4287-9a2c-b6250dce2db9" />
+<img width="1877" height="1007" alt="image2" src="https://github.com/user-attachments/assets/3d7bd128-cc61-4883-99ee-362ad3bc80a0" />
+
  Dashboard do Grafana monitorando os recursos em tempo real (Porta 3000)
+![Uploading Image1.png…]()
 
 
